@@ -5,17 +5,21 @@ import com.fitgoal.api.LoginService;
 import com.fitgoal.api.RegistrationService;
 import com.fitgoal.api.UserService;
 import com.fitgoal.api.domain.User;
+import com.fitgoal.api.domain.UserAccessData;
+import com.fitgoal.api.domain.UserNewPasswordData;
+
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Path("/users")
-@Produces({"application/json"})
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
+
     private final LoginService loginService;
     private final RegistrationService registrationService;
     private final UserService userService;
@@ -27,24 +31,42 @@ public class UserResource {
         this.userService = userService;
     }
 
+    @Path("/login")
+    @GET
+    @Timed
+    public User login(@NotNull @Valid UserAccessData user) {
+        return loginService.login(user);
+    }
+
     @Path("/register")
     @POST
     @Timed
-    public User register() {
-        return new User();
+    public Response register(@NotNull @Valid UserAccessData user) {
+        registrationService.register(user);
+        return Response.noContent().build();
     }
 
-    @Path("/{id}/login")
-    @GET
-    @Timed
-    public User login(@PathParam("id") Long userId) {
-        return loginService.login(userId);
-    }
-
-    @Path("/{id}/resetPassword")
+    @Path("/register/verify/{link:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}}")
     @PUT
     @Timed
-    public User resetPassword(@PathParam("id") Long userId) {
-        return new User();
+    public User activateUser(@PathParam("link") String verificationLink) {
+        return registrationService.activateUser(verificationLink);
     }
+
+    @Path("/forgotPassword")
+    @GET
+    @Timed
+    public Response getEmailForNotification(@QueryParam("email") String email) {
+        userService.notifyUser(email);
+        return Response.noContent().build();
+    }
+
+    @Path("/forgotPassword/{link:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}}/resetPassword")
+    @PUT
+    @Timed
+    public Response resetPassword(@PathParam("link") String link, UserNewPasswordData passwordData) {
+        userService.resetPassword(link, passwordData.getNewPassword());
+        return Response.noContent().build();
+    }
+
 }

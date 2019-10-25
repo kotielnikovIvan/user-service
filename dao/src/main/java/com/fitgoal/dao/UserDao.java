@@ -4,13 +4,17 @@ import com.fitgoal.dao.domain.UserDto;
 import java.util.List;
 
 public interface UserDao {
-    UserDto findById(Long var1);
+    UserDto findById(Long id);
 
     List<UserDto> findAll();
 
-    UserDto create(UserDto var1);
+    UserDto create(UserDto userDto);
 
-    UserDto update(UserDto var1);
+    UserDto update(UserDto userDto);
 
-    void delete(UserDto var1);
+    void delete(UserDto userDto);
+
+    UserDto findByEmail(String email);
+
+    UserDto findByLink(String link);
 }

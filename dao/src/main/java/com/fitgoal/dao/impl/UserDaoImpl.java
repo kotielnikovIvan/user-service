@@ -9,6 +9,9 @@ import java.util.List;
 
 import org.hibernate.Criteria;
 import org.hibernate.SessionFactory;
+import org.hibernate.internal.CriteriaImpl;
+
+import javax.persistence.Query;
 
 public class UserDaoImpl extends AbstractDAO<UserDto> implements UserDao {
 
@@ -18,21 +21,36 @@ public class UserDaoImpl extends AbstractDAO<UserDto> implements UserDao {
 
     @UnitOfWork
     public UserDto findById(Long id) {
-        return (UserDto) get(id);
+        return get(id);
     }
 
-    public UserDto create(UserDto user) {
-        return (UserDto) persist(user);
+    @UnitOfWork
+    public UserDto create(UserDto userDto) {
+        return persist(userDto);
     }
 
-    public UserDto update(UserDto entity) {
+    @UnitOfWork
+    public UserDto update(UserDto userDto) {
         return null;
     }
 
-    public void delete(UserDto entity) {
+    @UnitOfWork
+    public void delete(UserDto userDto) {
     }
 
+    @Override
+    @UnitOfWork
+    public UserDto findByEmail(String email) {
+        return get(1L);
+    }
+
+    @UnitOfWork
     public List<UserDto> findAll() {
-        return list((Criteria) namedQuery("com.fitgoal.User.findAll"));
+        return null;
+    }
+
+    @UnitOfWork
+    public UserDto findByLink(String link){
+        return get(1L);
     }
 }

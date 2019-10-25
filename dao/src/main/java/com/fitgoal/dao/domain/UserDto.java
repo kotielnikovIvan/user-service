@@ -1,9 +1,7 @@
 package com.fitgoal.dao.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.graalvm.compiler.hotspot.sparc.SPARCHotSpotSafepointOp;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -15,8 +13,10 @@ import java.util.UUID;
 @Table(name = "users")
 @Setter
 @Getter
-@AllArgsConstructor
 @NoArgsConstructor
+/*@NamedQueries({@NamedQuery(name = "com.fitgoal.dao.domain.UserDto",
+        query = "select u from u UserDto where u.email = email")
+})*/
 public class UserDto {
 
     @Id
@@ -37,6 +37,12 @@ public class UserDto {
 
     @NotNull
     private boolean active = false;
+
+    public UserDto(@Email @NotNull String email, @NotNull String password, @NotNull boolean active) {
+        this.email = email;
+        this.password = password;
+        this.active = active;
+    }
 
     @PrePersist
     private void prePersist() {

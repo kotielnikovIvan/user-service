@@ -3,25 +3,29 @@ package com.fitgoal.service;
 
 import com.fitgoal.api.LoginService;
 import com.fitgoal.api.domain.User;
+import com.fitgoal.api.domain.UserAccessData;
 import com.fitgoal.dao.UserDao;
 import com.fitgoal.dao.domain.UserDto;
-import com.fitgoal.service.util.UserMapper;
+import com.fitgoal.service.util.SimpleMapper;
+
 import javax.inject.Inject;
 
 public class LoginServiceImpl implements LoginService {
 
     private UserDao userDao;
+    private SimpleMapper mapper;
 
     @Inject
-    public LoginServiceImpl(UserDao userDao) {
+    public LoginServiceImpl(UserDao userDao, SimpleMapper mapper) {
         this.userDao = userDao;
+        this.mapper = mapper;
     }
 
-    public User login(Long userId) {
-        UserDto userDto = userDao.findById(userId);
-        if (userDto == null) {
+    public User login(UserAccessData user) {
+        UserDto userDto = userDao.findByEmail(user.getEmail());
+        if (userDto == null || !user.getPassword().equals(userDto.getPassword())) {
+//            TODO: Handle incorrect email or password exception;
         }
-        UserMapper mapper = new UserMapper();
-        return mapper.convertDtoEntityToApiEntity(userDto);
+        return (User) mapper.convertDtoEntityToApiEntity(userDto);
     }
 }

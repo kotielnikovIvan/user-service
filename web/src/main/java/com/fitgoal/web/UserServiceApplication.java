@@ -3,6 +3,8 @@ package com.fitgoal.web;
 import com.fitgoal.api.LoginService;
 import com.fitgoal.api.RegistrationService;
 import com.fitgoal.api.UserService;
+import com.fitgoal.service.util.SimpleMapper;
+import com.fitgoal.service.util.UserMapper;
 import com.fitgoal.web.config.UserServiceConfiguration;
 import com.fitgoal.dao.UserDao;
 import com.fitgoal.dao.domain.UserDto;
@@ -53,6 +55,7 @@ public class UserServiceApplication extends Application<UserServiceConfiguration
                 bind(RegistrationServiceImpl.class).to(RegistrationService.class).in(Singleton.class);
                 bind(UserServiceImpl.class).to(UserService.class).in(Singleton.class);
                 bind(userDao).to(UserDao.class).in(Singleton.class);
+                bind(UserMapper.class).to(SimpleMapper.class);
             }
         });
 
