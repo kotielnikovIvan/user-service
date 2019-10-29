@@ -12,11 +12,13 @@
     <artifactId>dao</artifactId>
 
     <dependencies>
+        <!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
         <dependency>
-            <groupId>io.dropwizard</groupId>
-            <artifactId>dropwizard-hibernate</artifactId>
-            <version>${dropwizard.version}</version>
+            <groupId>org.mybatis</groupId>
+            <artifactId>mybatis</artifactId>
+            <version>3.5.3</version>
         </dependency>
+
     </dependencies>
 
 </project>

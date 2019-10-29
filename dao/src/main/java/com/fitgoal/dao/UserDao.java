@@ -1,18 +1,18 @@
 package com.fitgoal.dao;
 
 import com.fitgoal.dao.domain.UserDto;
-import java.util.List;
 
 public interface UserDao {
-    UserDto findById(Long id);
 
-    List<UserDto> findAll();
+    UserDto getById(Long id);
 
-    UserDto create(UserDto userDto);
+//    List<UserDto> findAll();
+
+    UserDto save(UserDto userDto);
 
     UserDto update(UserDto userDto);
 
-    void delete(UserDto userDto);
+//    void delete(UserDto userDto);
 
     UserDto findByEmail(String email);
 

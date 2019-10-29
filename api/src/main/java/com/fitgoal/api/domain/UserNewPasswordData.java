@@ -4,8 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import javax.validation.constraints.Email;
+import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotEmpty;
 
 @Setter
@@ -13,8 +12,9 @@ import javax.validation.constraints.NotEmpty;
 @NoArgsConstructor
 public class UserNewPasswordData {
 
-    @JsonProperty
+    @JsonProperty("password")
     @NotEmpty
+    @Length(min = 8)
     private String newPassword;
 
 }

@@ -2,55 +2,60 @@ package com.fitgoal.dao.impl;
 
 import com.fitgoal.dao.UserDao;
 import com.fitgoal.dao.domain.UserDto;
-import io.dropwizard.hibernate.AbstractDAO;
-import io.dropwizard.hibernate.UnitOfWork;
+import com.fitgoal.dao.mybatis.config.MyBatisConfig;
+import com.fitgoal.dao.mybatis.mappers.UserMapper;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionException;
 
-import java.util.List;
 
-import org.hibernate.Criteria;
-import org.hibernate.SessionFactory;
-import org.hibernate.internal.CriteriaImpl;
+public class UserDaoImpl implements UserDao {
 
-import javax.persistence.Query;
-
-public class UserDaoImpl extends AbstractDAO<UserDto> implements UserDao {
-
-    public UserDaoImpl(SessionFactory sessionFactory) {
-        super(sessionFactory);
+    public UserDto getById(Long id) throws SqlSessionException {
+        UserDto user = null;
+        try (SqlSession session = MyBatisConfig.getSessionFactory().openSession()) {
+            UserMapper mapper = session.getMapper(UserMapper.class);
+            user = mapper.getById(id);
+            session.commit();
+        }
+        return user;
     }
 
-    @UnitOfWork
-    public UserDto findById(Long id) {
-        return get(id);
+    public UserDto save(UserDto userDto) {
+        try (SqlSession session = MyBatisConfig.getSessionFactory().openSession()) {
+            UserMapper mapper = session.getMapper(UserMapper.class);
+            mapper.save(userDto);
+            session.commit();
+        }
+        return userDto;
     }
 
-    @UnitOfWork
-    public UserDto create(UserDto userDto) {
-        return persist(userDto);
-    }
-
-    @UnitOfWork
     public UserDto update(UserDto userDto) {
-        return null;
+        try (SqlSession session = MyBatisConfig.getSessionFactory().openSession()) {
+            UserMapper mapper = session.getMapper(UserMapper.class);
+            mapper.update(userDto);
+            session.commit();
+        }
+        return userDto;
     }
 
-    @UnitOfWork
-    public void delete(UserDto userDto) {
+    public UserDto findByEmail(String email) throws SqlSessionException {
+        UserDto user = null;
+        try (SqlSession session = MyBatisConfig.getSessionFactory().openSession()) {
+            UserMapper mapper = session.getMapper(UserMapper.class);
+            user = mapper.findByEmail(email);
+            session.commit();
+        }
+        return user;
     }
 
-    @Override
-    @UnitOfWork
-    public UserDto findByEmail(String email) {
-        return get(1L);
-    }
 
-    @UnitOfWork
-    public List<UserDto> findAll() {
-        return null;
-    }
-
-    @UnitOfWork
-    public UserDto findByLink(String link){
-        return get(1L);
+    public UserDto findByLink(String link) throws SqlSessionException {
+        UserDto user = null;
+        try (SqlSession session = MyBatisConfig.getSessionFactory().openSession()) {
+            UserMapper mapper = session.getMapper(UserMapper.class);
+            user = mapper.findByLink(link);
+            session.commit();
+        }
+        return user;
     }
 }

@@ -10,6 +10,7 @@ import com.fitgoal.api.domain.UserNewPasswordData;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
@@ -39,7 +40,7 @@ public class UserResource {
     }
 
     @Path("/register")
-    @POST
+    @PUT
     @Timed
     public Response register(@NotNull @Valid UserAccessData user) {
         registrationService.register(user);
@@ -47,7 +48,7 @@ public class UserResource {
     }
 
     @Path("/register/verify/{link:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}}")
-    @PUT
+    @POST
     @Timed
     public User activateUser(@PathParam("link") String verificationLink) {
         return registrationService.activateUser(verificationLink);
@@ -56,17 +57,16 @@ public class UserResource {
     @Path("/forgotPassword")
     @GET
     @Timed
-    public Response getEmailForNotification(@QueryParam("email") String email) {
+    public Response getEmailForNotification(@NotNull @Email @QueryParam("email") String email) {
         userService.notifyUser(email);
         return Response.noContent().build();
     }
 
     @Path("/forgotPassword/{link:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}}/resetPassword")
-    @PUT
+    @POST
     @Timed
     public Response resetPassword(@PathParam("link") String link, UserNewPasswordData passwordData) {
         userService.resetPassword(link, passwordData.getNewPassword());
         return Response.noContent().build();
     }
-
 }

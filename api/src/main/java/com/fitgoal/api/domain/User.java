@@ -1,12 +1,13 @@
 package com.fitgoal.api.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.checkerframework.common.aliasing.qual.Unique;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-
-import lombok.*;
-import org.checkerframework.common.aliasing.qual.Unique;
 
 @Getter
 @Setter
@@ -31,9 +32,10 @@ public class User {
     @JsonProperty
     private boolean active = false;
 
-    public User(@Unique Long id, @NotEmpty @Email String email, boolean active) {
+    public User(@Unique Long id, @NotEmpty @Email String email, String link, boolean active) {
         this.id = id;
         this.email = email;
+        this.link = link;
         this.active = active;
     }
 }

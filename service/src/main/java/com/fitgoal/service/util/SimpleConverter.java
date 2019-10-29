@@ -1,6 +1,6 @@
 package com.fitgoal.service.util;
 
-public interface SimpleMapper<T, E> {
+public interface SimpleConverter<T, E> {
 
     E convertApiEntityToDtoEntity(T apiEntity);
 
