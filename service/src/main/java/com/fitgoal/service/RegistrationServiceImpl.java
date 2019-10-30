@@ -13,38 +13,47 @@ import java.util.UUID;
 public class RegistrationServiceImpl implements RegistrationService {
 
     private final UserDao userDao;
-    private final SimpleConverter mapper;
+    private final SimpleConverter converter;
 
     @Inject
-    public RegistrationServiceImpl(UserDao userDao, SimpleConverter mapper) {
+    public RegistrationServiceImpl(UserDao userDao, SimpleConverter converter) {
         this.userDao = userDao;
-        this.mapper = mapper;
+        this.converter = converter;
     }
 
     public void register(UserAccessData userAccessData) {
-        UserDto userDto = userDao.findByEmail(userAccessData.getEmail());
-        if (userDto != null) {
-//            TODO handle UserAlreadyExistsException;
+        if (userDao.findByEmail(userAccessData.getEmail()).isPresent()) {
+//         TODO: Replace with new UserAlreadyExistException();
+            throw new RuntimeException();
         }
-        User user = new User();
+        UserDto user = new UserDto();
         user.setEmail(userAccessData.getEmail());
         user.setPassword(userAccessData.getPassword());
-        userDao.save((UserDto) mapper.convertApiEntityToDtoEntity(user));
+        userDao.save(user);
 
-
-
+        /*userDao.findByEmail(userAccessData.getEmail())
+                .ifPresentOrElse(userDto -> {
+                    throw new RuntimeException();
+                }, () -> {
+                    UserDto user = new UserDto();
+                    user.setEmail(userAccessData.getEmail());
+                    user.setPassword(userAccessData.getPassword());
+                    userDao.save(user);
+                });*/
     }
 
     @Override
     public User activateUser(String link) {
-        UserDto userDto = userDao.findByLink(link);
-        if (userDto == null) {
-//            TODO handle UserNotFoundException;
-        }
-        userDto.setActive(true);
-        userDto.setLink(UUID.randomUUID().toString());
-        userDao.update(userDto);
-        return (User) mapper.convertDtoEntityToApiEntity(userDto);
+
+        return userDao.findByLink(link)
+                .map(userDto -> {
+                    userDto.setActive(true);
+                    userDto.setLink(UUID.randomUUID().toString());
+                    userDao.update(userDto);
+                    return (User) converter.convertDtoEntityToApiEntity(userDto);
+                })
+//               TODO: Replace with custom UserNotFoundException();
+                .orElseThrow(RuntimeException::new);
     }
 }
 

@@ -2,9 +2,11 @@ package com.fitgoal.dao;
 
 import com.fitgoal.dao.domain.UserDto;
 
+import java.util.Optional;
+
 public interface UserDao {
 
-    UserDto getById(Long id);
+    Optional<UserDto> getById(Long id);
 
 //    List<UserDto> findAll();
 
@@ -14,7 +16,7 @@ public interface UserDao {
 
 //    void delete(UserDto userDto);
 
-    UserDto findByEmail(String email);
+    Optional<UserDto> findByEmail(String email);
 
-    UserDto findByLink(String link);
+    Optional<UserDto> findByLink(String link);
 }

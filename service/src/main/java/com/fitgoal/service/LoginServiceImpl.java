@@ -5,7 +5,6 @@ import com.fitgoal.api.LoginService;
 import com.fitgoal.api.domain.User;
 import com.fitgoal.api.domain.UserAccessData;
 import com.fitgoal.dao.UserDao;
-import com.fitgoal.dao.domain.UserDto;
 import com.fitgoal.service.util.SimpleConverter;
 
 import javax.inject.Inject;
@@ -22,10 +21,10 @@ public class LoginServiceImpl implements LoginService {
     }
 
     public User login(UserAccessData user) {
-        UserDto userDto = userDao.findByEmail(user.getEmail());
-        if (userDto == null || !user.getPassword().equals(userDto.getPassword())) {
-//            TODO: Handle incorrect email or password exception;
-        }
-        return (User) converter.convertDtoEntityToApiEntity(userDto);
+        return userDao.findByEmail(user.getEmail())
+                .filter(userDto -> userDto.getPassword().equals(user.getPassword()))
+                .map(userDto -> (User) converter.convertDtoEntityToApiEntity(userDto))
+//               TODO: Replace with custom IncorrectEmailOrPasswordException;
+                .orElseThrow(RuntimeException::new);
     }
 }
