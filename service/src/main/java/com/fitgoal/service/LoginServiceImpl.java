@@ -4,6 +4,7 @@ package com.fitgoal.service;
 import com.fitgoal.api.LoginService;
 import com.fitgoal.api.domain.User;
 import com.fitgoal.api.domain.UserAccessData;
+import com.fitgoal.api.exceptions.IncorrectEmailOrPasswordException;
 import com.fitgoal.dao.UserDao;
 import com.fitgoal.service.util.SimpleConverter;
 
@@ -24,7 +25,6 @@ public class LoginServiceImpl implements LoginService {
         return userDao.findByEmail(user.getEmail())
                 .filter(userDto -> userDto.getPassword().equals(user.getPassword()))
                 .map(userDto -> (User) converter.convertDtoEntityToApiEntity(userDto))
-//               TODO: Replace with custom IncorrectEmailOrPasswordException;
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new IncorrectEmailOrPasswordException("Incorrect email or password"));
     }
 }

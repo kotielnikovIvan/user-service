@@ -3,6 +3,8 @@ package com.fitgoal.service;
 import com.fitgoal.api.RegistrationService;
 import com.fitgoal.api.domain.User;
 import com.fitgoal.api.domain.UserAccessData;
+import com.fitgoal.api.exceptions.UserAlreadyExistException;
+import com.fitgoal.api.exceptions.UserNotFoundException;
 import com.fitgoal.dao.UserDao;
 import com.fitgoal.dao.domain.UserDto;
 import com.fitgoal.service.util.SimpleConverter;
@@ -22,18 +24,19 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     public void register(UserAccessData userAccessData) {
-        if (userDao.findByEmail(userAccessData.getEmail()).isPresent()) {
-//         TODO: Replace with new UserAlreadyExistException();
-            throw new RuntimeException();
+        String email = userAccessData.getEmail();
+
+        if (userDao.findByEmail(email).isPresent()) {
+            throw new UserAlreadyExistException("User with " + email + " email already exist");
         }
         UserDto user = new UserDto();
-        user.setEmail(userAccessData.getEmail());
+        user.setEmail(email);
         user.setPassword(userAccessData.getPassword());
         userDao.save(user);
 
         /*userDao.findByEmail(userAccessData.getEmail())
                 .ifPresentOrElse(userDto -> {
-                    throw new RuntimeException();
+                    throw new UserAlreadyExistException("User with " + email + " email already exist");
                 }, () -> {
                     UserDto user = new UserDto();
                     user.setEmail(userAccessData.getEmail());
@@ -52,8 +55,7 @@ public class RegistrationServiceImpl implements RegistrationService {
                     userDao.update(userDto);
                     return (User) converter.convertDtoEntityToApiEntity(userDto);
                 })
-//               TODO: Replace with custom UserNotFoundException();
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new UserNotFoundException("Link " + link + " already invalid"));
     }
 }
 

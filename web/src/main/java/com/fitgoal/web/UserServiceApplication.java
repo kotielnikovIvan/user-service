@@ -5,15 +5,18 @@ import com.fitgoal.api.RegistrationService;
 import com.fitgoal.api.UserService;
 import com.fitgoal.dao.UserDao;
 import com.fitgoal.dao.impl.UserDaoImpl;
-import com.fitgoal.dao.mybatis.config.MyBatisConfig;
 import com.fitgoal.service.LoginServiceImpl;
 import com.fitgoal.service.RegistrationServiceImpl;
 import com.fitgoal.service.UserServiceImpl;
 import com.fitgoal.service.util.SimpleConverter;
 import com.fitgoal.service.util.UserConverter;
 import com.fitgoal.web.config.UserServiceConfiguration;
+import com.fitgoal.web.exceptionmapper.IncorrectEmailOrPasswordExceptionMapper;
+import com.fitgoal.web.exceptionmapper.UserAlreadyExistExceptionMapper;
+import com.fitgoal.web.exceptionmapper.UserNotFoundExceptionMapper;
 import com.fitgoal.web.resources.UserResource;
 import io.dropwizard.Application;
+import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
@@ -36,7 +39,9 @@ public class UserServiceApplication extends Application<UserServiceConfiguration
 
     public void run(UserServiceConfiguration config, Environment environment) throws Exception {
 
-        environment.jersey().register(new AbstractBinder() {
+        JerseyEnvironment jersey = environment.jersey();
+
+        jersey.register(new AbstractBinder() {
             protected void configure() {
                 bind(LoginServiceImpl.class).to(LoginService.class).in(Singleton.class);
                 bind(RegistrationServiceImpl.class).to(RegistrationService.class).in(Singleton.class);
@@ -45,7 +50,9 @@ public class UserServiceApplication extends Application<UserServiceConfiguration
                 bind(UserConverter.class).to(SimpleConverter.class);
             }
         });
-
-        environment.jersey().register(UserResource.class);
+        jersey.register(UserResource.class);
+        jersey.register(UserNotFoundExceptionMapper.class);
+        jersey.register(IncorrectEmailOrPasswordExceptionMapper.class);
+        jersey.register(UserAlreadyExistExceptionMapper.class);
     }
 }
