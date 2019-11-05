@@ -1,7 +1,6 @@
 package com.fitgoal.api.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,17 +12,15 @@ import javax.validation.constraints.NotEmpty;
 @Setter
 @Getter
 @NoArgsConstructor
-@AllArgsConstructor
-public class UserAccessData {
+public class UserRegistrationData {
 
     @JsonProperty
-    @NotEmpty
     @Email
     private String email;
 
     @JsonProperty
     @NotEmpty
-    @Length(min = 8)
+    @Length(min = 8, max = 12)
     private String password;
 
 }

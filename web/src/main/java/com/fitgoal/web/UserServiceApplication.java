@@ -1,27 +1,31 @@
 package com.fitgoal.web;
 
-import com.fitgoal.api.LoginService;
-import com.fitgoal.api.RegistrationService;
-import com.fitgoal.api.UserService;
+import com.fitgoal.api.Login;
+import com.fitgoal.api.Registration;
+import com.fitgoal.api.ResetPassword;
 import com.fitgoal.dao.UserDao;
 import com.fitgoal.dao.impl.UserDaoImpl;
-import com.fitgoal.service.LoginServiceImpl;
-import com.fitgoal.service.RegistrationServiceImpl;
-import com.fitgoal.service.UserServiceImpl;
-import com.fitgoal.service.util.SimpleConverter;
-import com.fitgoal.service.util.UserConverter;
+import com.fitgoal.service.LoginService;
+import com.fitgoal.service.RegistrationService;
+import com.fitgoal.service.ResetPasswordService;
 import com.fitgoal.web.config.UserServiceConfiguration;
 import com.fitgoal.web.exceptionmapper.IncorrectEmailOrPasswordExceptionMapper;
 import com.fitgoal.web.exceptionmapper.UserAlreadyExistExceptionMapper;
 import com.fitgoal.web.exceptionmapper.UserNotFoundExceptionMapper;
-import com.fitgoal.web.resources.UserResource;
+import com.fitgoal.web.resources.LoginResource;
+import com.fitgoal.web.resources.RegistrationResource;
+import com.fitgoal.web.resources.ResetPasswordResource;
 import io.dropwizard.Application;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSessionManager;
 import org.glassfish.jersey.internal.inject.AbstractBinder;
 
 import javax.inject.Singleton;
+import java.io.IOException;
+import java.io.Reader;
 
 public class UserServiceApplication extends Application<UserServiceConfiguration> {
 
@@ -41,18 +45,32 @@ public class UserServiceApplication extends Application<UserServiceConfiguration
 
         JerseyEnvironment jersey = environment.jersey();
 
+        final SqlSessionManager sessionManager = buildSqlSessionManager();
+
         jersey.register(new AbstractBinder() {
             protected void configure() {
-                bind(LoginServiceImpl.class).to(LoginService.class).in(Singleton.class);
-                bind(RegistrationServiceImpl.class).to(RegistrationService.class).in(Singleton.class);
-                bind(UserServiceImpl.class).to(UserService.class).in(Singleton.class);
+                bind(LoginService.class).to(Login.class).in(Singleton.class);
+                bind(RegistrationService.class).to(Registration.class).in(Singleton.class);
+                bind(ResetPasswordService.class).to(ResetPassword.class).in(Singleton.class);
                 bind(UserDaoImpl.class).to(UserDao.class).in(Singleton.class);
-                bind(UserConverter.class).to(SimpleConverter.class);
+
+                bind(sessionManager).to(SqlSessionManager.class);
             }
         });
-        jersey.register(UserResource.class);
+        jersey.register(ResetPasswordResource.class);
+        jersey.register(LoginResource.class);
+        jersey.register(RegistrationResource.class);
+
         jersey.register(UserNotFoundExceptionMapper.class);
         jersey.register(IncorrectEmailOrPasswordExceptionMapper.class);
         jersey.register(UserAlreadyExistExceptionMapper.class);
+    }
+
+    private SqlSessionManager buildSqlSessionManager() {
+        try(Reader reader = Resources.getResourceAsReader("mybatis/mybatis-config.xml")) {
+            return SqlSessionManager.newInstance(reader);
+        } catch (IOException e) {
+            throw new RuntimeException(e.getMessage());
+        }
     }
 }

@@ -1,41 +1,36 @@
 package com.fitgoal.api.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.checkerframework.common.aliasing.qual.Unique;
+import lombok.Builder;
 
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class User {
 
-    @Unique
     @JsonProperty
+    @NotNull
     private Long id;
 
-    @NotEmpty
     @JsonProperty
     @Email
     private String email;
 
     @JsonProperty
-    private String password;
-
-    @JsonProperty
+    @NotNull
     private String link;
 
     @JsonProperty
-    private boolean active = false;
+    @NotNull
+    private boolean active;
 
-    public User(@Unique Long id, @NotEmpty @Email String email, String link, boolean active) {
-        this.id = id;
-        this.email = email;
-        this.link = link;
-        this.active = active;
-    }
 }

@@ -14,13 +14,10 @@ public interface UserMapper {
     @Options(useGeneratedKeys = true, keyProperty = "id")
     void save(UserDto userDto);
 
-    @Select("Select * from users where id = #{userId}")
-    Optional<UserDto> getById(Long userId);
-
-    @Select("Select * from users where email = #{userEmail}")
+    @Select("Select id, email, password, link, active from users where email = #{userEmail}")
     Optional<UserDto> findByEmail(String userEmail);
 
-    @Select("Select * from users where link = #{userLink}")
+    @Select("Select id, email, password, link, active from users where link = #{userLink}")
     Optional<UserDto> findByLink(String userLink);
 
     @Update("Update users set email = #{email}, password = #{password}, link = #{link}, active = #{active} where id = #{id}")
