@@ -1,7 +1,7 @@
 
 package com.fitgoal.service;
 
-import com.fitgoal.api.Login;
+import com.fitgoal.api.LoginService;
 import com.fitgoal.api.domain.User;
 import com.fitgoal.api.domain.UserLoginData;
 import com.fitgoal.api.exceptions.IncorrectEmailOrPasswordException;
@@ -10,12 +10,12 @@ import com.fitgoal.service.util.UserConverter;
 
 import javax.inject.Inject;
 
-public class LoginService implements Login {
+public class LoginServiceImpl implements LoginService {
 
     private UserDao userDao;
 
     @Inject
-    public LoginService(UserDao userDao) {
+    public LoginServiceImpl(UserDao userDao) {
         this.userDao = userDao;
     }
 

@@ -15,6 +15,7 @@ public class UserLoginData {
 
     @JsonProperty
     @Email
+    @NotEmpty
     private String email;
 
     @JsonProperty

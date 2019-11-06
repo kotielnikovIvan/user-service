@@ -10,12 +10,10 @@ import java.util.Optional;
 
 public class UserDaoImpl implements UserDao {
 
-    private SqlSessionManager sessionManager;
     private UserMapper userMapper;
 
     @Inject
     public UserDaoImpl(SqlSessionManager sessionManager) {
-        this.sessionManager = sessionManager;
         this.userMapper = sessionManager.getMapper(UserMapper.class);
     }
 

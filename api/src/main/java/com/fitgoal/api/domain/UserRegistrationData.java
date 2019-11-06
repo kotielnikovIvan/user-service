@@ -16,6 +16,7 @@ public class UserRegistrationData {
 
     @JsonProperty
     @Email
+    @NotEmpty
     private String email;
 
     @JsonProperty

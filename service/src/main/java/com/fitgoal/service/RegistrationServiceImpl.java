@@ -1,6 +1,6 @@
 package com.fitgoal.service;
 
-import com.fitgoal.api.Registration;
+import com.fitgoal.api.RegistrationService;
 import com.fitgoal.api.domain.User;
 import com.fitgoal.api.domain.UserRegistrationData;
 import com.fitgoal.api.exceptions.UserAlreadyExistException;
@@ -12,29 +12,31 @@ import com.fitgoal.service.util.UserConverter;
 import javax.inject.Inject;
 import java.util.UUID;
 
-public class RegistrationService implements Registration {
+public class RegistrationServiceImpl implements RegistrationService {
 
     private final UserDao userDao;
 
     @Inject
-    public RegistrationService(UserDao userDao) {
+    public RegistrationServiceImpl(UserDao userDao) {
         this.userDao = userDao;
     }
 
     public void register(UserRegistrationData userRegistrationData) {
         String email = userRegistrationData.getEmail();
 
-        userDao.findByEmail(email).ifPresent(userDto -> {
-            throw new UserAlreadyExistException(email);
-        });
+        userDao.findByEmail(email)
+                .ifPresent(userDto -> {
+                    throw new UserAlreadyExistException(email);
+                });
         createUser(userRegistrationData, email);
     }
 
     private void createUser(UserRegistrationData userRegistrationData, String email) {
-        UserDto user = new UserDto();
-        user.setEmail(email);
-        user.setPassword(userRegistrationData.getPassword());
-        user.setLink(UUID.randomUUID().toString());
+        UserDto user = UserDto.builder()
+                .email(email)
+                .password(userRegistrationData.getPassword())
+                .link(UUID.randomUUID().toString())
+                .build();
         userDao.save(user);
     }
 

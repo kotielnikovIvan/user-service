@@ -1,13 +1,13 @@
 package com.fitgoal.web;
 
-import com.fitgoal.api.Login;
-import com.fitgoal.api.Registration;
-import com.fitgoal.api.ResetPassword;
+import com.fitgoal.api.LoginService;
+import com.fitgoal.api.RegistrationService;
+import com.fitgoal.api.ResetPasswordService;
 import com.fitgoal.dao.UserDao;
 import com.fitgoal.dao.impl.UserDaoImpl;
-import com.fitgoal.service.LoginService;
-import com.fitgoal.service.RegistrationService;
-import com.fitgoal.service.ResetPasswordService;
+import com.fitgoal.service.LoginServiceImpl;
+import com.fitgoal.service.RegistrationServiceImpl;
+import com.fitgoal.service.ResetPasswordServiceImpl;
 import com.fitgoal.web.config.UserServiceConfiguration;
 import com.fitgoal.web.exceptionmapper.IncorrectEmailOrPasswordExceptionMapper;
 import com.fitgoal.web.exceptionmapper.UserAlreadyExistExceptionMapper;
@@ -26,6 +26,7 @@ import org.glassfish.jersey.internal.inject.AbstractBinder;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.Properties;
 
 public class UserServiceApplication extends Application<UserServiceConfiguration> {
 
@@ -45,13 +46,13 @@ public class UserServiceApplication extends Application<UserServiceConfiguration
 
         JerseyEnvironment jersey = environment.jersey();
 
-        final SqlSessionManager sessionManager = buildSqlSessionManager();
+        final SqlSessionManager sessionManager = buildSqlSessionManager(config);
 
         jersey.register(new AbstractBinder() {
             protected void configure() {
-                bind(LoginService.class).to(Login.class).in(Singleton.class);
-                bind(RegistrationService.class).to(Registration.class).in(Singleton.class);
-                bind(ResetPasswordService.class).to(ResetPassword.class).in(Singleton.class);
+                bind(LoginServiceImpl.class).to(LoginService.class).in(Singleton.class);
+                bind(RegistrationServiceImpl.class).to(RegistrationService.class).in(Singleton.class);
+                bind(ResetPasswordServiceImpl.class).to(ResetPasswordService.class).in(Singleton.class);
                 bind(UserDaoImpl.class).to(UserDao.class).in(Singleton.class);
 
                 bind(sessionManager).to(SqlSessionManager.class);
@@ -66,9 +67,14 @@ public class UserServiceApplication extends Application<UserServiceConfiguration
         jersey.register(UserAlreadyExistExceptionMapper.class);
     }
 
-    private SqlSessionManager buildSqlSessionManager() {
+    private SqlSessionManager buildSqlSessionManager(UserServiceConfiguration config) {
+        Properties properties = new Properties();
+        properties.setProperty("url", config.getDataSourceFactory().getUrl());
+        properties.setProperty("username", config.getDataSourceFactory().getUser());
+        properties.setProperty("password", config.getDataSourceFactory().getPassword());
+
         try(Reader reader = Resources.getResourceAsReader("mybatis/mybatis-config.xml")) {
-            return SqlSessionManager.newInstance(reader);
+            return SqlSessionManager.newInstance(reader, properties);
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
         }

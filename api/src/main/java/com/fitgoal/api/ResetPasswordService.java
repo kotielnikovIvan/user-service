@@ -2,7 +2,7 @@ package com.fitgoal.api;
 
 import com.fitgoal.api.domain.UserEmailData;
 
-public interface ResetPassword {
+public interface ResetPasswordService {
 
     void sendEmailForResetPassword(UserEmailData email);
 

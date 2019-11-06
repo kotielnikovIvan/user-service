@@ -1,7 +1,7 @@
 package com.fitgoal.web.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.fitgoal.api.Login;
+import com.fitgoal.api.LoginService;
 import com.fitgoal.api.domain.User;
 import com.fitgoal.api.domain.UserLoginData;
 
@@ -19,16 +19,16 @@ import javax.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public class LoginResource {
 
-    private Login login;
+    private LoginService loginService;
 
     @Inject
-    public LoginResource(Login login) {
-        this.login = login;
+    public LoginResource(LoginService loginService) {
+        this.loginService = loginService;
     }
 
     @GET
     @Timed
     public User login(@NotNull @Valid UserLoginData user) {
-        return login.login(user);
+        return loginService.login(user);
     }
 }

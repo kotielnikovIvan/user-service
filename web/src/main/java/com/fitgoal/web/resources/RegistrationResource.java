@@ -1,7 +1,7 @@
 package com.fitgoal.web.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.fitgoal.api.Registration;
+import com.fitgoal.api.RegistrationService;
 import com.fitgoal.api.domain.User;
 import com.fitgoal.api.domain.UserRegistrationData;
 
@@ -21,23 +21,23 @@ import javax.ws.rs.core.MediaType;
 @Path(value = "/registration")
 public class RegistrationResource {
 
-    private Registration registration;
+    private RegistrationService registrationService;
 
     @Inject
-    public RegistrationResource(Registration registration) {
-        this.registration = registration;
+    public RegistrationResource(RegistrationService registrationService) {
+        this.registrationService = registrationService;
     }
 
     @PUT
     @Timed
     public void register(@NotNull @Valid UserRegistrationData user) {
-        registration.register(user);
+        registrationService.register(user);
     }
 
     @Path("/verify/{link:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}}")
     @POST
     @Timed
     public User activateUser(@PathParam("link") String verificationLink) {
-        return registration.activateUser(verificationLink);
+        return registrationService.activateUser(verificationLink);
     }
 }

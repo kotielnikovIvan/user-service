@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.Builder;
 
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Getter
@@ -23,6 +24,7 @@ public class User {
 
     @JsonProperty
     @Email
+    @NotEmpty
     private String email;
 
     @JsonProperty

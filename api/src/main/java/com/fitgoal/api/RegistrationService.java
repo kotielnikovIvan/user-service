@@ -3,7 +3,7 @@ package com.fitgoal.api;
 import com.fitgoal.api.domain.User;
 import com.fitgoal.api.domain.UserRegistrationData;
 
-public interface Registration {
+public interface RegistrationService {
 
     void register(UserRegistrationData user);
 

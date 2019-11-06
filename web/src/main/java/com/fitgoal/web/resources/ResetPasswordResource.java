@@ -1,7 +1,7 @@
 package com.fitgoal.web.resources;
 
 import com.codahale.metrics.annotation.Timed;
-import com.fitgoal.api.ResetPassword;
+import com.fitgoal.api.ResetPasswordService;
 import com.fitgoal.api.domain.UserEmailData;
 import com.fitgoal.api.domain.UserNewPasswordData;
 
@@ -19,23 +19,23 @@ import javax.ws.rs.core.MediaType;
 @Consumes(MediaType.APPLICATION_JSON)
 public class ResetPasswordResource {
 
-    private final ResetPassword resetPassword;
+    private final ResetPasswordService resetPasswordService;
 
     @Inject
-    public ResetPasswordResource(ResetPassword resetPassword) {
-        this.resetPassword = resetPassword;
+    public ResetPasswordResource(ResetPasswordService resetPasswordService) {
+        this.resetPasswordService = resetPasswordService;
     }
 
     @GET
     @Timed
     public void sendEmailForResetPassword(UserEmailData email) {
-        resetPassword.sendEmailForResetPassword(email);
+        resetPasswordService.sendEmailForResetPassword(email);
     }
 
     @Path("/{link:[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}}/resetPassword")
     @POST
     @Timed
     public void resetPassword(@PathParam("link") String link, UserNewPasswordData passwordData) {
-        resetPassword.resetPassword(link, passwordData.getNewPassword());
+        resetPasswordService.resetPassword(link, passwordData.getNewPassword());
     }
 }
