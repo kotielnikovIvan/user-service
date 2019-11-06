@@ -5,8 +5,8 @@ import com.fitgoal.api.domain.User;
 import com.fitgoal.api.domain.UserRegistrationData;
 import com.fitgoal.api.exceptions.UserAlreadyExistException;
 import com.fitgoal.api.exceptions.UserNotFoundException;
-import com.fitgoal.dao.UserDao;
 import com.fitgoal.dao.domain.UserDto;
+import com.fitgoal.dao.mongo.MongoUserDao;
 import com.fitgoal.service.util.UserConverter;
 
 import javax.inject.Inject;
@@ -14,17 +14,17 @@ import java.util.UUID;
 
 public class RegistrationServiceImpl implements RegistrationService {
 
-    private final UserDao userDao;
+    private final MongoUserDao mongoUserDao;
 
     @Inject
-    public RegistrationServiceImpl(UserDao userDao) {
-        this.userDao = userDao;
+    public RegistrationServiceImpl(MongoUserDao mongoUserDao) {
+        this.mongoUserDao = mongoUserDao;
     }
 
     public void register(UserRegistrationData userRegistrationData) {
         String email = userRegistrationData.getEmail();
 
-        userDao.findByEmail(email)
+        mongoUserDao.findByEmail(email)
                 .ifPresent(userDto -> {
                     throw new UserAlreadyExistException(email);
                 });
@@ -37,13 +37,13 @@ public class RegistrationServiceImpl implements RegistrationService {
                 .password(userRegistrationData.getPassword())
                 .link(UUID.randomUUID().toString())
                 .build();
-        userDao.save(user);
+        mongoUserDao.save(user);
     }
 
     @Override
     public User activateUser(String link) {
 
-        return userDao.findByLink(link)
+        return mongoUserDao.findByLink(link)
                 .map(this::updateUser)
                 .map(UserConverter::convertDtoEntityToApiEntity)
                 .orElseThrow(() -> new UserNotFoundException("Link " + link + " invalid"));
@@ -52,7 +52,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     private UserDto updateUser(UserDto userDto) {
         userDto.setActive(true);
         userDto.setLink(UUID.randomUUID().toString());
-        return userDao.update(userDto);
+        return mongoUserDao.update(userDto);
     }
 }
 

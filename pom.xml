@@ -125,6 +125,14 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.5</version>
             </dependency>
+
+            <!-- https://mvnrepository.com/artifact/org.mongodb/mongo-java-driver -->
+            <dependency>
+                <groupId>org.mongodb</groupId>
+                <artifactId>mongo-java-driver</artifactId>
+                <version>3.11.1</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

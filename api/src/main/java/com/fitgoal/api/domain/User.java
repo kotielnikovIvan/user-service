@@ -20,7 +20,7 @@ public class User {
 
     @JsonProperty
     @NotNull
-    private Long id;
+    private String id;
 
     @JsonProperty
     @Email

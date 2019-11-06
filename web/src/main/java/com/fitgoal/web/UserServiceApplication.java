@@ -5,6 +5,8 @@ import com.fitgoal.api.RegistrationService;
 import com.fitgoal.api.ResetPasswordService;
 import com.fitgoal.dao.UserDao;
 import com.fitgoal.dao.impl.UserDaoImpl;
+import com.fitgoal.dao.mongo.MongoUserDao;
+import com.fitgoal.dao.mongo.impl.MongoUserDaoImpl;
 import com.fitgoal.service.LoginServiceImpl;
 import com.fitgoal.service.RegistrationServiceImpl;
 import com.fitgoal.service.ResetPasswordServiceImpl;
@@ -15,6 +17,9 @@ import com.fitgoal.web.exceptionmapper.UserNotFoundExceptionMapper;
 import com.fitgoal.web.resources.LoginResource;
 import com.fitgoal.web.resources.RegistrationResource;
 import com.fitgoal.web.resources.ResetPasswordResource;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.client.MongoClientFactory;
 import io.dropwizard.Application;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Bootstrap;
@@ -54,7 +59,9 @@ public class UserServiceApplication extends Application<UserServiceConfiguration
                 bind(RegistrationServiceImpl.class).to(RegistrationService.class).in(Singleton.class);
                 bind(ResetPasswordServiceImpl.class).to(ResetPasswordService.class).in(Singleton.class);
                 bind(UserDaoImpl.class).to(UserDao.class).in(Singleton.class);
+                bind(MongoUserDaoImpl.class).to(MongoUserDao.class).in(Singleton.class);
 
+                bind(new MongoClient()).to(MongoClient.class);
                 bind(sessionManager).to(SqlSessionManager.class);
             }
         });
@@ -73,7 +80,7 @@ public class UserServiceApplication extends Application<UserServiceConfiguration
         properties.setProperty("username", config.getDataSourceFactory().getUser());
         properties.setProperty("password", config.getDataSourceFactory().getPassword());
 
-        try(Reader reader = Resources.getResourceAsReader("mybatis/mybatis-config.xml")) {
+        try (Reader reader = Resources.getResourceAsReader("mybatis/mybatis-config.xml")) {
             return SqlSessionManager.newInstance(reader, properties);
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
