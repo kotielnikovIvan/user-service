@@ -73,7 +73,7 @@ public class UserServiceApplication extends Application<UserServiceConfiguration
         properties.setProperty("username", config.getDataSourceFactory().getUser());
         properties.setProperty("password", config.getDataSourceFactory().getPassword());
 
-        try(Reader reader = Resources.getResourceAsReader("mybatis/mybatis-config.xml")) {
+        try (Reader reader = Resources.getResourceAsReader("mybatis/mybatis-config.xml")) {
             return SqlSessionManager.newInstance(reader, properties);
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());

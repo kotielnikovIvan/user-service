@@ -7,7 +7,10 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.session.SqlSessionManager;
-import org.junit.*;
+import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Test;
 import org.testcontainers.containers.MySQLContainer;
 
 import java.io.IOException;
@@ -40,7 +43,7 @@ public class UserDaoImplTest {
     }
 
     @Test
-    public void testCreateUserAndGetByEmail() {
+    public void whenCreateUserAndGetByEmail_thenReturnUser() {
         UserDto testUser = createUser();
         String email = testUser.getEmail();
         dao.save(testUser);
@@ -51,7 +54,16 @@ public class UserDaoImplTest {
     }
 
     @Test
-    public void testGetUserByLink() {
+    public void whenGetUserByNonExistingEmail_thenReturnOptionalOfEmpty() {
+        String email = "wrongEmail@gmail.com";
+
+        Optional<UserDto> testUser = dao.findByEmail(email);
+
+        assertThat(testUser).isEqualTo(Optional.empty());
+    }
+
+    @Test
+    public void whenGetUserByLink_thenReturnUser() {
         UserDto testUser = createUser();
         String link = testUser.getLink();
         dao.save(testUser);
@@ -59,6 +71,27 @@ public class UserDaoImplTest {
         Optional<UserDto> actualUser = dao.findByLink(link);
 
         assertThat(actualUser).contains(testUser);
+    }
+
+    @Test
+    public void whenGetUserByNonExistingLink_thenReturnOptionalOfEmpty() {
+        String link = "wrongLink";
+
+        Optional<UserDto> testUser = dao.findByLink(link);
+
+        assertThat(testUser).isEqualTo(Optional.empty());
+    }
+
+    @Test
+    public void whenUpdateExistingUser_thenReturnUpdatedUser() {
+        UserDto testUser = createUser();
+        dao.save(testUser);
+        testUser.setEmail("updated@gmail.com");
+        testUser.setLink("updatedLink");
+
+        UserDto actualUser = dao.update(testUser);
+
+        assertThat(actualUser).isEqualTo(testUser);
     }
 
     private static UserDto createUser() {
