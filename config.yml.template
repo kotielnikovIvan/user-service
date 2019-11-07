@@ -1,0 +1,15 @@
+#set up your server config here
+server:
+  applicationConnectors:
+    - type:
+      port:
+  adminConnectors:
+    - type:
+      port:
+
+#set up your database properties here
+database:
+  driverClass:
+  user:
+  password:
+  url:
