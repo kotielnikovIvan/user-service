@@ -3,23 +3,20 @@ package com.fitgoal.web.resources;
 import com.fitgoal.api.LoginService;
 import com.fitgoal.api.domain.User;
 import com.fitgoal.api.domain.UserLoginData;
-import com.fitgoal.web.exceptionmapper.IncorrectEmailOrPasswordExceptionMapper;
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
 import io.dropwizard.testing.junit5.ResourceExtension;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 import static com.fitgoal.web.resources.util.TestHelper.createUser;
-import static com.fitgoal.web.resources.util.TestHelper.createUserLoginData;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.times;
 
 @ExtendWith(DropwizardExtensionsSupport.class)
 public class LoginResourceTest {
@@ -28,7 +25,6 @@ public class LoginResourceTest {
     private static final LoginService LOGIN_SERVICE = mock(LoginService.class);
     public static final ResourceExtension RESOURCE = ResourceExtension.builder()
             .addResource(new LoginResource(LOGIN_SERVICE))
-            .addProvider(IncorrectEmailOrPasswordExceptionMapper.class)
             .build();
 
     @BeforeClass
@@ -43,16 +39,16 @@ public class LoginResourceTest {
 
     @Test
     public void whenLoginUser_thenReturnUserData() {
-        UserLoginData testUserLoginData = createUserLoginData();
         User user = createUser();
 
-        when(LOGIN_SERVICE.login(testUserLoginData)).thenReturn(user);
+        when(LOGIN_SERVICE.login(any(UserLoginData.class))).thenReturn(user);
 
-        Response response = RESOURCE.target(RESOURCE_PATH)
-                .request(MediaType.APPLICATION_JSON)
-                .get();
+        User actualUser = RESOURCE.target(RESOURCE_PATH)
+                .request()
+                .get(User.class);
 
-        assertThat(response.getStatusInfo()).isEqualTo(Response.Status.OK);
+        assertThat(actualUser).isNotNull();
+        assertThat(actualUser).isEqualTo(user);
         verify(LOGIN_SERVICE, times(1)).login(any(UserLoginData.class));
     }
 }
