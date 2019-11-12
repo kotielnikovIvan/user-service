@@ -17,7 +17,6 @@ import com.fitgoal.web.resources.RegistrationResource;
 import com.fitgoal.web.resources.ResetPasswordResource;
 import io.dropwizard.Application;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
-import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSessionManager;
@@ -36,10 +35,6 @@ public class UserServiceApplication extends Application<UserServiceConfiguration
 
     public String getName() {
         return "user-service";
-    }
-
-    public void initialize(Bootstrap<UserServiceConfiguration> bootstrap) {
-
     }
 
     public void run(UserServiceConfiguration config, Environment environment) throws Exception {

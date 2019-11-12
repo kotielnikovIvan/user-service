@@ -10,8 +10,7 @@ import com.fitgoal.web.exceptionmapper.UserNotFoundExceptionMapper;
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
 import io.dropwizard.testing.junit5.ResourceExtension;
 import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -24,7 +23,6 @@ import static com.fitgoal.web.resources.util.TestHelper.createUserRegistrationDa
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -34,42 +32,37 @@ import static org.mockito.Mockito.doThrow;
 @ExtendWith(DropwizardExtensionsSupport.class)
 public class RegistrationResourceTest {
 
-    private static final String RESOURCE_PATH = "/registration";
-    private static final RegistrationService REGISTRATION_SERVICE = mock(RegistrationService.class);
-    public static final ResourceExtension RESOURCE = ResourceExtension.builder()
-            .addResource(new RegistrationResource(REGISTRATION_SERVICE))
+    private final String resourcePath = "/registration";
+    private final RegistrationService registrationService = mock(RegistrationService.class);
+    public final ResourceExtension resourceExtension = ResourceExtension.builder()
+            .addResource(new RegistrationResource(registrationService))
             .addProvider(UserAlreadyExistExceptionMapper.class)
             .addProvider(UserNotFoundExceptionMapper.class)
             .build();
 
-    @BeforeClass
-    public static void setUp() throws Throwable {
-        RESOURCE.before();
-    }
-
-    @AfterClass
-    public static void tearDown() throws Throwable {
-        RESOURCE.after();
+    @Before
+    public void setUp() throws Throwable {
+        resourceExtension.before();
     }
 
     @After
-    public void tearDownAfterEach() {
-        reset(REGISTRATION_SERVICE);
+    public void tearDown() throws Throwable {
+        resourceExtension.after();
     }
 
     @Test
     public void whenRegisterNewUser_thenReturnNoContentStatusCode() {
         UserRegistrationData testUserRegistrationData = createUserRegistrationData();
 
-        Response response = RESOURCE.target(RESOURCE_PATH)
+        Response response = resourceExtension.target(resourcePath)
                 .request()
                 .method("PUT", Entity.json(testUserRegistrationData));
 
-        doNothing().when(REGISTRATION_SERVICE).register(any(UserRegistrationData.class));
+        doNothing().when(registrationService).register(any(UserRegistrationData.class));
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(204);
-        verify(REGISTRATION_SERVICE, times(1))
+        verify(registrationService, times(1))
                 .register(any(UserRegistrationData.class));
     }
 
@@ -78,15 +71,15 @@ public class RegistrationResourceTest {
         UserRegistrationData testUserRegistrationData = createUserRegistrationData();
 
         doThrow(UserAlreadyExistException.class)
-                .when(REGISTRATION_SERVICE).register(any(UserRegistrationData.class));
+                .when(registrationService).register(any(UserRegistrationData.class));
 
-        Response response = RESOURCE.target(RESOURCE_PATH)
+        Response response = resourceExtension.target(resourcePath)
                 .request()
                 .method("PUT", Entity.json(testUserRegistrationData));
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(400);
-        verify(REGISTRATION_SERVICE, times(1))
+        verify(registrationService, times(1))
                 .register(any(UserRegistrationData.class));
     }
 
@@ -95,33 +88,33 @@ public class RegistrationResourceTest {
         User user = createUser();
         String testLink = UUID.randomUUID().toString();
 
-        when(REGISTRATION_SERVICE.activateUser(testLink))
+        when(registrationService.activateUser(testLink))
                 .thenReturn(user);
 
-        User actualUser = RESOURCE.target(RESOURCE_PATH)
+        User actualUser = resourceExtension.target(resourcePath)
                 .path("/verify/" + testLink)
                 .request()
                 .method("POST", User.class);
 
         assertThat(actualUser).isNotNull();
         assertThat(actualUser).isEqualTo(user);
-        verify(REGISTRATION_SERVICE, times(1)).activateUser(testLink);
+        verify(registrationService, times(1)).activateUser(testLink);
     }
 
     @Test
     public void whenActivateUserByNotValidLink_thenReturnBadRequestStatusCode() {
         String testLink = UUID.randomUUID().toString();
 
-        when(REGISTRATION_SERVICE.activateUser(testLink))
+        when(registrationService.activateUser(testLink))
                 .thenThrow(UserNotFoundException.class);
 
-        Response response = RESOURCE.target(RESOURCE_PATH)
+        Response response = resourceExtension.target(resourcePath)
                 .path("/verify/" + testLink)
                 .request()
                 .method("POST");
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(404);
-        verify(REGISTRATION_SERVICE, times(1)).activateUser(testLink);
+        verify(registrationService, times(1)).activateUser(testLink);
     }
 }
