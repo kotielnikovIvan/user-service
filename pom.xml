@@ -14,6 +14,7 @@
         <module>service</module>
         <module>web</module>
         <module>dao</module>
+        <module>integration</module>
     </modules>
     <packaging>pom</packaging>
 
