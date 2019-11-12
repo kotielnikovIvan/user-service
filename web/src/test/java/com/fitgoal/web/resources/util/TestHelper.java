@@ -14,16 +14,6 @@ public class TestHelper {
                 .build();
     }
 
-    public static UserDto createUserDto() {
-        return UserDto.builder()
-                .id(1L)
-                .email("test@gmail.com")
-                .password("testPass")
-                .link("testLink")
-                .active(false)
-                .build();
-    }
-
     public static UserRegistrationData createUserRegistrationData() {
         return UserRegistrationData.builder()
                 .email("test@gmail.com")
@@ -39,5 +29,4 @@ public class TestHelper {
                 .active(false)
                 .build();
     }
-
 }

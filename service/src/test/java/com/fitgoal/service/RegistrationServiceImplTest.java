@@ -78,7 +78,6 @@ public class RegistrationServiceImplTest {
 
     @Test(expected = UserNotFoundException.class)
     public void whenActivateUserByExpiredLink_thenShouldThrowUserNotFoundException() {
-        UserDto testUserDto = createUserDto();
         String link = "wrongLink";
 
         when(userDao.findByLink(link)).thenReturn(Optional.empty());

@@ -44,6 +44,7 @@ public class LoginServiceImplTest {
         User receivedUser = loginService.login(testUserLoginData);
 
         assertThat(receivedUser).isNotNull();
+        assertThat(receivedUser.getEmail()).isEqualTo(testUserDto.getEmail());
     }
 
     @Test(expected = IncorrectEmailOrPasswordException.class)
