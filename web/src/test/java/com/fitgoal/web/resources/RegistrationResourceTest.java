@@ -18,8 +18,8 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 import java.util.UUID;
 
-import static com.fitgoal.web.resources.util.TestHelper.createUser;
-import static com.fitgoal.web.resources.util.TestHelper.createUserRegistrationData;
+import static com.fitgoal.web.util.WebTestHelper.createUser;
+import static com.fitgoal.web.util.WebTestHelper.createUserRegistrationData;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;

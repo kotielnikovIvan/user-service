@@ -14,8 +14,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Optional;
 
-import static com.fitgoal.service.util.TestHelper.createUserDto;
-import static com.fitgoal.service.util.TestHelper.createUserLoginData;
+import static com.fitgoal.service.util.ServiceTestHelper.createUserDto;
+import static com.fitgoal.service.util.ServiceTestHelper.createUserLoginData;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

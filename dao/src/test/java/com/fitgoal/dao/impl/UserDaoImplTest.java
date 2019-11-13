@@ -8,7 +8,7 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.session.SqlSessionManager;
 import org.junit.After;
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.testcontainers.containers.MySQLContainer;
@@ -26,14 +26,13 @@ public class UserDaoImplTest {
             .withDatabaseName("test_db")
             .withInitScript("sqlScripts/create-db-schema.sql");
 
-    private static UserDao dao;
-    private static MySqlTestHelper testHelper;
+    private UserDao dao;
+    private MySqlTestHelper testHelper = new MySqlTestHelper(mySQLContainer);
 
-    @BeforeClass
-    public static void setUp() throws IOException {
+    @Before
+    public void setUp() throws IOException {
         SqlSessionManager sessionManager = SqlSessionManager.newInstance(getSqlSessionFactory());
         dao = new UserDaoImpl(sessionManager);
-        testHelper = new MySqlTestHelper(mySQLContainer);
     }
 
     @After
@@ -42,7 +41,7 @@ public class UserDaoImplTest {
     }
 
     @Test
-    public void findByEmail_whenUserExists_assertContent() {
+    public void findByEmail_whenUserExists_assertContentEqual() {
         UserDto testUser = saveUser();
         String email = testUser.getEmail();
 
@@ -52,16 +51,16 @@ public class UserDaoImplTest {
     }
 
     @Test
-    public void findByEmail_whenUserNotExists_returnOptionalOfEmpty() {
+    public void findByEmail_whenUserNotExists_assertContentEmpty() {
         String email = "wrongEmail@gmail.com";
 
         Optional<UserDto> testUser = dao.findByEmail(email);
 
-        assertThat(testUser).isEqualTo(Optional.empty());
+        assertThat(testUser).isEmpty();
     }
 
     @Test
-    public void findByLink_whenUserExists_assertContentIsEqual() {
+    public void findByLink_whenUserExists_assertContentEqual() {
         UserDto testUser = saveUser();
         String link = testUser.getLink();
 
@@ -71,16 +70,16 @@ public class UserDaoImplTest {
     }
 
     @Test
-    public void findByLink_whenUserNotExist_returnOptionalOfEmpty() {
+    public void findByLink_whenUserNotExists_assertContentEmpty() {
         String link = "wrongLink";
 
         Optional<UserDto> testUser = dao.findByLink(link);
 
-        assertThat(testUser).isEqualTo(Optional.empty());
+        assertThat(testUser).isEmpty();
     }
 
     @Test
-    public void updateUser_whenUserExist_assertContentIsEqual() {
+    public void updateUser_whenUserExists_assertContentEqual() {
         UserDto testUser = saveUser();
         testUser.setEmail("updated@gmail.com");
         testUser.setLink("updatedLink");

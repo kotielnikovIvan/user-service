@@ -15,8 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
-import static com.fitgoal.web.resources.util.TestHelper.createUser;
-import static com.fitgoal.web.resources.util.TestHelper.createUserLoginData;
+import static com.fitgoal.web.util.WebTestHelper.createUser;
+import static com.fitgoal.web.util.WebTestHelper.createUserLoginData;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;

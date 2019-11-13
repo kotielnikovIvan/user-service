@@ -7,6 +7,7 @@ import com.fitgoal.web.exceptionmapper.UserNotFoundExceptionMapper;
 import com.fitgoal.web.resources.LoginResource;
 import com.fitgoal.web.resources.RegistrationResource;
 import com.fitgoal.web.resources.ResetPasswordResource;
+import io.dropwizard.db.DataSourceFactory;
 import io.dropwizard.jersey.setup.JerseyEnvironment;
 import io.dropwizard.setup.Environment;
 import org.junit.Before;
@@ -14,7 +15,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static com.fitgoal.web.util.TestHelper.createDataSourceFactory;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -33,7 +33,7 @@ public class UserServiceApplicationTest {
     }
 
     @Test
-    public void testBuildResources() throws Exception {
+    public void runApp_whenEnvironmentConfigured_verifyRegisterResources() throws Exception {
         when(environment.jersey()).thenReturn(jersey);
 
         application.run(config, environment);
@@ -44,5 +44,14 @@ public class UserServiceApplicationTest {
         verify(jersey).register(UserNotFoundExceptionMapper.class);
         verify(jersey).register(IncorrectEmailOrPasswordExceptionMapper.class);
         verify(jersey).register(UserAlreadyExistExceptionMapper.class);
+    }
+
+    public static DataSourceFactory createDataSourceFactory() {
+        DataSourceFactory sourceFactory = new DataSourceFactory();
+        sourceFactory.setDriverClass("com.mysql.jdbc.Driver");
+        sourceFactory.setUrl("jdbc:mysql://localhost:3306/test_db");
+        sourceFactory.setUser("test");
+        sourceFactory.setPassword("test");
+        return sourceFactory;
     }
 }
