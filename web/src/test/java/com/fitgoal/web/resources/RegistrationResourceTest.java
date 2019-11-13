@@ -51,7 +51,7 @@ public class RegistrationResourceTest {
     }
 
     @Test
-    public void whenRegisterNewUser_thenReturnNoContentStatusCode() {
+    public void registerUser_whenUserNotExists_expect204StatusCode() {
         UserRegistrationData testUserRegistrationData = createUserRegistrationData();
 
         Response response = resourceExtension.target(resourcePath)
@@ -67,7 +67,7 @@ public class RegistrationResourceTest {
     }
 
     @Test
-    public void whenRegisterExistingUser_thenReturnBadRequestStatusCode() {
+    public void registerUser_whenUserExists_expect400StatusCode() {
         UserRegistrationData testUserRegistrationData = createUserRegistrationData();
 
         doThrow(UserAlreadyExistException.class)
@@ -84,7 +84,7 @@ public class RegistrationResourceTest {
     }
 
     @Test
-    public void whenActivateUserByValidLink_thenReturnUser() {
+    public void verifyUser_whenUserLinkValid_assertContent() {
         User user = createUser();
         String testLink = UUID.randomUUID().toString();
 
@@ -102,7 +102,7 @@ public class RegistrationResourceTest {
     }
 
     @Test
-    public void whenActivateUserByNotValidLink_thenReturnBadRequestStatusCode() {
+    public void verifyUser_whenUserLinkNotValid_expect404StatusCode() {
         String testLink = UUID.randomUUID().toString();
 
         when(registrationService.activateUser(testLink))

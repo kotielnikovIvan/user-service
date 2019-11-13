@@ -1,15 +1,14 @@
 package com.fitgoal.service;
 
-import com.fitgoal.api.RegistrationService;
 import com.fitgoal.api.domain.User;
 import com.fitgoal.api.domain.UserRegistrationData;
 import com.fitgoal.api.exceptions.UserAlreadyExistException;
 import com.fitgoal.api.exceptions.UserNotFoundException;
 import com.fitgoal.dao.UserDao;
 import com.fitgoal.dao.domain.UserDto;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -30,15 +29,11 @@ public class RegistrationServiceImplTest {
     @Mock
     private UserDao userDao;
 
-    private RegistrationService registrationService;
-
-    @Before
-    public void setUp() {
-        registrationService = new RegistrationServiceImpl(userDao);
-    }
+    @InjectMocks
+    private RegistrationServiceImpl registrationService;
 
     @Test
-    public void whenRegisterNewUser_thenShouldSaveItToDB() {
+    public void registerUser_whenUserNotExists_verifySaveInDB() {
         UserRegistrationData testUserRegistrationData = createUserRegistrationData();
 
         when(userDao.findByEmail(testUserRegistrationData.getEmail()))
@@ -49,20 +44,20 @@ public class RegistrationServiceImplTest {
         verify(userDao, times(1)).save(any(UserDto.class));
     }
 
-    @Test(expected = UserAlreadyExistException.class)
-    public void whenRegisterExistingUser_thenShouldThrowUserAlreadyExistException() {
+    @Test
+    public void registerUser_whenUserExists_throwUserAlreadyExistException() {
         UserRegistrationData testUserRegistrationData = createUserRegistrationData();
         UserDto testUserDto = createUserDto();
 
         when(userDao.findByEmail(testUserRegistrationData.getEmail()))
                 .thenReturn(Optional.of(testUserDto));
 
-        registrationService.register(testUserRegistrationData);
-        assertThatThrownBy(() -> new UserAlreadyExistException(testUserRegistrationData.getEmail()));
+        assertThatThrownBy(() -> registrationService.register(testUserRegistrationData))
+                .isInstanceOf(UserAlreadyExistException.class);
     }
 
     @Test
-    public void whenActivateUser_thenShouldReturnUserAndUpdateUserInDB() {
+    public void activateUser_whenUserLinkValid_verifyUserUpdatedInDB() {
         UserDto testUserDto = createUserDto();
         String link = testUserDto.getLink();
 
@@ -76,16 +71,13 @@ public class RegistrationServiceImplTest {
         verify(userDao, times(1)).update(any(UserDto.class));
     }
 
-    @Test(expected = UserNotFoundException.class)
-    public void whenActivateUserByExpiredLink_thenShouldThrowUserNotFoundException() {
+    @Test
+    public void activateUser_whenUserLinkExpired_throwUserNotFoundException() {
         String link = "wrongLink";
 
         when(userDao.findByLink(link)).thenReturn(Optional.empty());
 
-        User user = registrationService.activateUser(link);
-
-        assertThat(user).isNull();
-        assertThatThrownBy(() -> new UserNotFoundException("link expired"));
-
+        assertThatThrownBy(() -> registrationService.activateUser(link))
+                .isInstanceOf(UserNotFoundException.class);
     }
 }

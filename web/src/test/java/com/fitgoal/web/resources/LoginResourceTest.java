@@ -45,7 +45,7 @@ public class LoginResourceTest {
     }
 
     @Test
-    public void whenLoginUser_thenReturnUserData() {
+    public void loginUser_whenUserExists_assertContent() {
         UserLoginData testUserLoginData = createUserLoginData();
         User user = createUser();
 
@@ -61,7 +61,7 @@ public class LoginResourceTest {
     }
 
     @Test
-    public void whenLoginUserWithBadCredentials_thenReturnBadRequestStatusCode() {
+    public void loginUser_whenWrongEmailOrPassword_expect400StatusCode() {
         UserLoginData testUserLoginData = createUserLoginData();
 
         when(loginService.login(any(UserLoginData.class)))

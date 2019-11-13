@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.testcontainers.containers.MySQLContainer;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -31,22 +30,21 @@ public class UserDaoImplTest {
     private static MySqlTestHelper testHelper;
 
     @BeforeClass
-    public static void setUpSessionManager() {
+    public static void setUp() throws IOException {
         SqlSessionManager sessionManager = SqlSessionManager.newInstance(getSqlSessionFactory());
         dao = new UserDaoImpl(sessionManager);
         testHelper = new MySqlTestHelper(mySQLContainer);
     }
 
     @After
-    public void deleteAllFromDBAfterEachTest(){
+    public void cleanUp() {
         testHelper.deleteAll("users");
     }
 
     @Test
-    public void whenCreateUserAndGetByEmail_thenReturnUser() {
-        UserDto testUser = createUser();
+    public void findByEmail_whenUserExists_assertContent() {
+        UserDto testUser = saveUser();
         String email = testUser.getEmail();
-        dao.save(testUser);
 
         Optional<UserDto> actualUser = dao.findByEmail(email);
 
@@ -54,7 +52,7 @@ public class UserDaoImplTest {
     }
 
     @Test
-    public void whenGetUserByNonExistingEmail_thenReturnOptionalOfEmpty() {
+    public void findByEmail_whenUserNotExists_returnOptionalOfEmpty() {
         String email = "wrongEmail@gmail.com";
 
         Optional<UserDto> testUser = dao.findByEmail(email);
@@ -63,10 +61,9 @@ public class UserDaoImplTest {
     }
 
     @Test
-    public void whenGetUserByLink_thenReturnUser() {
-        UserDto testUser = createUser();
+    public void findByLink_whenUserExists_assertContentIsEqual() {
+        UserDto testUser = saveUser();
         String link = testUser.getLink();
-        dao.save(testUser);
 
         Optional<UserDto> actualUser = dao.findByLink(link);
 
@@ -74,7 +71,7 @@ public class UserDaoImplTest {
     }
 
     @Test
-    public void whenGetUserByNonExistingLink_thenReturnOptionalOfEmpty() {
+    public void findByLink_whenUserNotExist_returnOptionalOfEmpty() {
         String link = "wrongLink";
 
         Optional<UserDto> testUser = dao.findByLink(link);
@@ -83,15 +80,20 @@ public class UserDaoImplTest {
     }
 
     @Test
-    public void whenUpdateExistingUser_thenReturnUpdatedUser() {
-        UserDto testUser = createUser();
-        dao.save(testUser);
+    public void updateUser_whenUserExist_assertContentIsEqual() {
+        UserDto testUser = saveUser();
         testUser.setEmail("updated@gmail.com");
         testUser.setLink("updatedLink");
 
         UserDto actualUser = dao.update(testUser);
 
         assertThat(actualUser).isEqualTo(testUser);
+    }
+
+    private UserDto saveUser() {
+        UserDto testUser = createUser();
+        dao.save(testUser);
+        return testUser;
     }
 
     private static UserDto createUser() {
@@ -104,17 +106,13 @@ public class UserDaoImplTest {
                 .build();
     }
 
-    private static SqlSessionFactory getSqlSessionFactory() {
+    private static SqlSessionFactory getSqlSessionFactory() throws IOException {
         Properties properties = new Properties();
-
         properties.setProperty("url", mySQLContainer.getJdbcUrl());
         properties.setProperty("username", mySQLContainer.getUsername());
         properties.setProperty("password", mySQLContainer.getPassword());
 
-        try (InputStream is = Resources.getResourceAsStream("mybatis/mybatis-config.xml")) {
-            return new SqlSessionFactoryBuilder().build(is, properties);
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        }
+        return new SqlSessionFactoryBuilder()
+                .build(Resources.getResourceAsStream("mybatis/mybatis-config.xml"), properties);
     }
 }

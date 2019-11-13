@@ -3,7 +3,6 @@ package com.fitgoal.web.resources.util;
 import com.fitgoal.api.domain.User;
 import com.fitgoal.api.domain.UserLoginData;
 import com.fitgoal.api.domain.UserRegistrationData;
-import com.fitgoal.dao.domain.UserDto;
 
 public class TestHelper {
 

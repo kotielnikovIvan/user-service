@@ -1,14 +1,13 @@
 package com.fitgoal.service;
 
-import com.fitgoal.api.LoginService;
 import com.fitgoal.api.domain.User;
 import com.fitgoal.api.domain.UserLoginData;
 import com.fitgoal.api.exceptions.IncorrectEmailOrPasswordException;
 import com.fitgoal.dao.UserDao;
 import com.fitgoal.dao.domain.UserDto;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -26,15 +25,11 @@ public class LoginServiceImplTest {
     @Mock
     private UserDao userDao;
 
-    private LoginService loginService;
-
-    @Before
-    public void setUp() {
-        loginService = new LoginServiceImpl(userDao);
-    }
+    @InjectMocks
+    private LoginServiceImpl loginService;
 
     @Test
-    public void whenLoginUserWithCorrectEmailAndPassword_thenReturnUser() {
+    public void loginUser_whenUserExists_assertContentNotNull() {
         UserDto testUserDto = createUserDto();
         UserLoginData testUserLoginData = createUserLoginData();
 
@@ -47,21 +42,20 @@ public class LoginServiceImplTest {
         assertThat(receivedUser.getEmail()).isEqualTo(testUserDto.getEmail());
     }
 
-    @Test(expected = IncorrectEmailOrPasswordException.class)
-    public void whenLoginUserWithIncorrectEmail_thenThrowIncorrectEmailOrPasswordException() {
+    @Test
+    public void loginUser_whenWrongEmail_throwIncorrectEmailOrPasswordException() {
         UserLoginData testUserLoginData = createUserLoginData();
         testUserLoginData.setEmail("wrongEmail@gmail.com");
 
         Mockito.when(userDao.findByEmail(testUserLoginData.getEmail()))
                 .thenReturn(Optional.empty());
 
-        loginService.login(testUserLoginData);
-
-        assertThatThrownBy(IncorrectEmailOrPasswordException::new);
+        assertThatThrownBy(() -> loginService.login(testUserLoginData))
+                .isInstanceOf(IncorrectEmailOrPasswordException.class);
     }
 
-    @Test(expected = IncorrectEmailOrPasswordException.class)
-    public void whenLoginUserWithIncorrectPassword_thenThrowIncorrectEmailOrPasswordException() {
+    @Test
+    public void loginUser_whenWrongPassword_throwIncorrectEmailOrPasswordException() {
         UserDto testUserDto = createUserDto();
         UserLoginData testUserLoginData = createUserLoginData();
         testUserLoginData.setPassword("wrongPass");
@@ -69,8 +63,7 @@ public class LoginServiceImplTest {
         Mockito.when(userDao.findByEmail(testUserLoginData.getEmail()))
                 .thenReturn(Optional.of(testUserDto));
 
-        loginService.login(testUserLoginData);
-
-        assertThatThrownBy(IncorrectEmailOrPasswordException::new);
+        assertThatThrownBy(() -> loginService.login(testUserLoginData))
+                .isInstanceOf(IncorrectEmailOrPasswordException.class);
     }
 }
