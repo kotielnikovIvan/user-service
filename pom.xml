@@ -23,34 +23,28 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>11</java.version>
-        <maven.compiler.source>${java.version}</maven.compiler.source>
-        <maven.compiler.target>${java.version}</maven.compiler.target>
         <dropwizard.version>2.0.0-rc11</dropwizard.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
-
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-core</artifactId>
                 <version>${dropwizard.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-testing</artifactId>
                 <version>${dropwizard.version}</version>
                 <scope>test</scope>
             </dependency>
-
             <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
             <dependency>
                 <groupId>mysql</groupId>
                 <artifactId>mysql-connector-java</artifactId>
                 <version>8.0.18</version>
             </dependency>
-
             <!-- https://mvnrepository.com/artifact/org.projectlombok/lombok -->
             <dependency>
                 <groupId>org.projectlombok</groupId>
@@ -58,59 +52,48 @@
                 <version>1.18.10</version>
                 <scope>provided</scope>
             </dependency>
-
             <dependency>
                 <groupId>fit-goal</groupId>
                 <artifactId>api</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
-
             <dependency>
                 <groupId>fit-goal</groupId>
                 <artifactId>service</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
-
             <dependency>
                 <groupId>fit-goal</groupId>
                 <artifactId>dao</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
-
             <dependency>
                 <groupId>fit-goal</groupId>
                 <artifactId>web</artifactId>
                 <version>1.0-SNAPSHOT</version>
             </dependency>
-
             <dependency>
                 <groupId>io.dropwizard</groupId>
                 <artifactId>dropwizard-db</artifactId>
                 <version>${dropwizard.version}</version>
             </dependency>
-
             <dependency>
                 <groupId>org.mybatis</groupId>
                 <artifactId>mybatis</artifactId>
                 <version>3.5.3</version>
             </dependency>
-
             <dependency>
                 <groupId>org.testcontainers</groupId>
                 <artifactId>mysql</artifactId>
                 <scope>test</scope>
                 <version>1.12.3</version>
             </dependency>
-
-            <!-- https://mvnrepository.com/artifact/junit/junit -->
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>4.13-rc-1</version>
                 <scope>test</scope>
             </dependency>
-
-
             <!-- https://mvnrepository.com/artifact/org.assertj/assertj-core -->
             <dependency>
                 <groupId>org.assertj</groupId>
@@ -118,12 +101,19 @@
                 <version>3.14.0</version>
                 <scope>test</scope>
             </dependency>
-
-            <!-- https://mvnrepository.com/artifact/org.jacoco/jacoco-maven-plugin -->
+            <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
             <dependency>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.5</version>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>3.1.0</version>
+                <scope>test</scope>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>5.6.0-M1</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>

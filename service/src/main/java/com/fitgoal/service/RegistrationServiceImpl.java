@@ -28,12 +28,12 @@ public class RegistrationServiceImpl implements RegistrationService {
                 .ifPresent(userDto -> {
                     throw new UserAlreadyExistException(email);
                 });
-        createUser(userRegistrationData, email);
+        createUser(userRegistrationData);
     }
 
-    private void createUser(UserRegistrationData userRegistrationData, String email) {
+    private void createUser(UserRegistrationData userRegistrationData) {
         UserDto user = UserDto.builder()
-                .email(email)
+                .email(userRegistrationData.getEmail())
                 .password(userRegistrationData.getPassword())
                 .link(UUID.randomUUID().toString())
                 .build();
