@@ -7,7 +7,6 @@ import com.fitgoal.api.exceptions.IncorrectEmailOrPasswordException;
 import com.fitgoal.web.exceptionmapper.IncorrectEmailOrPasswordExceptionMapper;
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
 import io.dropwizard.testing.junit5.ResourceExtension;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +21,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
 
 @ExtendWith(DropwizardExtensionsSupport.class)
 public class LoginResourceTest {
@@ -39,11 +37,6 @@ public class LoginResourceTest {
         resourceExtension.before();
     }
 
-    @After
-    public void tearDown() throws Throwable {
-        resourceExtension.after();
-    }
-
     @Test
     public void loginUser_whenUserExists_assertContent() {
         UserLoginData testUserLoginData = createUserLoginData();
@@ -57,7 +50,7 @@ public class LoginResourceTest {
 
         assertThat(actualUser).isNotNull();
         assertThat(actualUser).isEqualTo(user);
-        verify(loginService, times(1)).login(any(UserLoginData.class));
+        verify(loginService).login(any(UserLoginData.class));
     }
 
     @Test
@@ -73,6 +66,6 @@ public class LoginResourceTest {
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(400);
-        verify(loginService, times(1)).login(any(UserLoginData.class));
+        verify(loginService).login(any(UserLoginData.class));
     }
 }

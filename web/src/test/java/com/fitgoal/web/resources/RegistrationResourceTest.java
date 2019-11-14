@@ -9,7 +9,6 @@ import com.fitgoal.web.exceptionmapper.UserAlreadyExistExceptionMapper;
 import com.fitgoal.web.exceptionmapper.UserNotFoundExceptionMapper;
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport;
 import io.dropwizard.testing.junit5.ResourceExtension;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +23,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.doThrow;
@@ -45,11 +43,6 @@ public class RegistrationResourceTest {
         resourceExtension.before();
     }
 
-    @After
-    public void tearDown() throws Throwable {
-        resourceExtension.after();
-    }
-
     @Test
     public void registerUser_whenUserNotExists_expect204StatusCode() {
         UserRegistrationData testUserRegistrationData = createUserRegistrationData();
@@ -62,8 +55,7 @@ public class RegistrationResourceTest {
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(204);
-        verify(registrationService, times(1))
-                .register(any(UserRegistrationData.class));
+        verify(registrationService).register(any(UserRegistrationData.class));
     }
 
     @Test
@@ -79,8 +71,7 @@ public class RegistrationResourceTest {
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(400);
-        verify(registrationService, times(1))
-                .register(any(UserRegistrationData.class));
+        verify(registrationService).register(any(UserRegistrationData.class));
     }
 
     @Test
@@ -98,7 +89,7 @@ public class RegistrationResourceTest {
 
         assertThat(actualUser).isNotNull();
         assertThat(actualUser).isEqualTo(user);
-        verify(registrationService, times(1)).activateUser(testLink);
+        verify(registrationService).activateUser(testLink);
     }
 
     @Test
@@ -115,6 +106,6 @@ public class RegistrationResourceTest {
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(404);
-        verify(registrationService, times(1)).activateUser(testLink);
+        verify(registrationService).activateUser(testLink);
     }
 }

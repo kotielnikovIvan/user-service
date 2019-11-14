@@ -41,7 +41,7 @@ public class RegistrationServiceImplTest {
 
         registrationService.register(testUserRegistrationData);
 
-        verify(userDao, times(1)).save(any(UserDto.class));
+        verify(userDao).save(any(UserDto.class));
     }
 
     @Test
@@ -68,7 +68,8 @@ public class RegistrationServiceImplTest {
         User actualUser = registrationService.activateUser(link);
 
         assertThat(actualUser).isNotNull();
-        verify(userDao, times(1)).update(any(UserDto.class));
+        assertThat(actualUser.getEmail()).isEqualTo(testUserDto.getEmail());
+        verify(userDao).update(any(UserDto.class));
     }
 
     @Test
