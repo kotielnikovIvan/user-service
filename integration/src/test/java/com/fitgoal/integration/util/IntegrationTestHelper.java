@@ -1,20 +1,20 @@
 package com.fitgoal.integration.util;
 
-import org.testcontainers.containers.MySQLContainer;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class TestHelper {
+import org.testcontainers.containers.MySQLContainer;
+
+public class IntegrationTestHelper {
 
     private final MySQLContainer sqlContainer;
     private final String dbUrl;
     private final String dbUsername;
     private final String dbPassword;
 
-    public TestHelper(MySQLContainer sqlContainer) {
+    public IntegrationTestHelper(MySQLContainer sqlContainer) {
         this.sqlContainer = sqlContainer;
         dbUsername = sqlContainer.getUsername();
         dbPassword = sqlContainer.getPassword();
