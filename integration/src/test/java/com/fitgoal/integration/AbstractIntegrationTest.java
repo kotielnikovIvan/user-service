@@ -1,24 +1,12 @@
 package com.fitgoal.integration;
 
-import java.io.IOException;
-import java.util.Properties;
-import java.util.UUID;
-
-import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.apache.ibatis.session.SqlSessionManager;
 import org.junit.AfterClass;
 import org.junit.After;
 import org.junit.BeforeClass;
-import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testcontainers.containers.MySQLContainer;
 
-import com.fitgoal.dao.domain.UserDto;
-import com.fitgoal.dao.UserDao;
-import com.fitgoal.dao.impl.UserDaoImpl;
 import com.fitgoal.integration.util.IntegrationTestHelper;
 import com.fitgoal.web.UserServiceApplication;
 import com.fitgoal.web.config.UserServiceConfiguration;
@@ -37,9 +25,7 @@ public abstract class AbstractIntegrationTest {
 
     protected static DropwizardAppExtension<UserServiceConfiguration> appExtension;
     protected final String APP_URL = "http://localhost:" + appExtension.getLocalPort();
-
-    private UserDao dao;
-    private IntegrationTestHelper testHelper = new IntegrationTestHelper(mySQLContainer);
+    protected IntegrationTestHelper testHelper = new IntegrationTestHelper(mySQLContainer);
 
     @BeforeClass
     public static void setUpExtension() throws Exception {
@@ -57,39 +43,8 @@ public abstract class AbstractIntegrationTest {
         appExtension.after();
     }
 
-    @Before
-    public void setUp() throws Exception {
-        SqlSessionManager sessionManager = SqlSessionManager.newInstance(getSqlSessionFactory());
-        dao = new UserDaoImpl(sessionManager);
-    }
-
     @After
     public void cleanUp() {
         testHelper.deleteAll("users");
-    }
-
-    private static SqlSessionFactory getSqlSessionFactory() throws IOException {
-        Properties properties = new Properties();
-        properties.setProperty("url", mySQLContainer.getJdbcUrl());
-        properties.setProperty("username", mySQLContainer.getUsername());
-        properties.setProperty("password", mySQLContainer.getPassword());
-
-        return new SqlSessionFactoryBuilder()
-                .build(Resources.getResourceAsStream("mybatis/mybatis-config.xml"), properties);
-    }
-
-    protected UserDto saveUserToDB() {
-        UserDto userDto = createUserDto();
-        dao.save(userDto);
-        return userDto;
-    }
-
-    private UserDto createUserDto() {
-        return UserDto.builder()
-                .email("test@gmail.com")
-                .password("testPassword")
-                .link(UUID.randomUUID().toString())
-                .active(false)
-                .build();
     }
 }

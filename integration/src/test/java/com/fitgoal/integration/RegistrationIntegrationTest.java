@@ -39,7 +39,7 @@ public class RegistrationIntegrationTest extends AbstractIntegrationTest {
 
     @Test
     public void activateUser_whenUserLinkNotExpired_expect200StatusCodeAndAssertContent() {
-        UserDto testUserDto = saveUserToDB();
+        UserDto testUserDto = testHelper.saveUser();
         String testLink = testUserDto.getLink();
 
         Response response = getPostResponse(testLink);
@@ -54,7 +54,7 @@ public class RegistrationIntegrationTest extends AbstractIntegrationTest {
     @Test
     public void activateUser_whenUserLinkExpired_expect404StatusCode() {
         String expiredLink = UUID.randomUUID().toString();
-        saveUserToDB();
+        testHelper.saveUser();
 
         Response response = getPostResponse(expiredLink);
 
@@ -70,13 +70,14 @@ public class RegistrationIntegrationTest extends AbstractIntegrationTest {
 
     private Response getPostResponse(String testLink) {
         return appExtension.client().target(resourcePath)
-                .path("/verify/" + testLink)
+                .path("verify")
+                .path(testLink)
                 .request()
                 .method("POST");
     }
 
     private UserRegistrationData getUserRegistrationData() {
-        UserDto userDto = saveUserToDB();
+        UserDto userDto = testHelper.saveUser();
         return UserRegistrationData.builder()
                 .email(userDto.getEmail())
                 .password(userDto.getPassword())

@@ -52,7 +52,7 @@ public class LoginIntegrationTest extends AbstractIntegrationTest {
     }
 
     private UserLoginData getUserLoginData() {
-        UserDto userDto = saveUserToDB();
+        UserDto userDto = testHelper.saveUser();
         return UserLoginData.builder()
                 .email(userDto.getEmail())
                 .password(userDto.getPassword())
