@@ -1,0 +1,16 @@
+
+@namespace("com.fitgoal.userservice")
+
+protocol UserServiceProtocol {
+
+  record UserRecord {
+    string email;
+
+    string link;
+
+    boolean active;
+  }
+
+}
+
+

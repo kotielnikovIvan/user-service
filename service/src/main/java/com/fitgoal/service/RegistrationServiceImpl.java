@@ -7,6 +7,8 @@ import com.fitgoal.api.exceptions.UserAlreadyExistException;
 import com.fitgoal.api.exceptions.UserNotFoundException;
 import com.fitgoal.dao.UserDao;
 import com.fitgoal.dao.domain.UserDto;
+import com.fitgoal.service.kafka.model.UserEvent;
+import com.fitgoal.service.kafka.producer.EventProducer;
 import com.fitgoal.service.util.UserConverter;
 
 import javax.inject.Inject;
@@ -15,10 +17,12 @@ import java.util.UUID;
 public class RegistrationServiceImpl implements RegistrationService {
 
     private final UserDao userDao;
+    private final EventProducer producer;
 
     @Inject
-    public RegistrationServiceImpl(UserDao userDao) {
+    public RegistrationServiceImpl(UserDao userDao, EventProducer producer) {
         this.userDao = userDao;
+        this.producer = producer;
     }
 
     public void register(UserRegistrationData userRegistrationData) {
@@ -28,16 +32,26 @@ public class RegistrationServiceImpl implements RegistrationService {
                 .ifPresent(userDto -> {
                     throw new UserAlreadyExistException(email);
                 });
-        createUser(userRegistrationData);
+        UserDto userDto = createUser(userRegistrationData);
+        UserEvent userEvent = getUserEvent(userRegistrationData);
+        producer.sendMessage(String.valueOf(userDto.getId()), userEvent.toString());
     }
 
-    private void createUser(UserRegistrationData userRegistrationData) {
+    private UserEvent getUserEvent(UserRegistrationData userRegistrationData) {
+        return UserEvent.builder()
+                    .email(userRegistrationData.getEmail())
+                    .password(userRegistrationData.getPassword())
+                    .build();
+    }
+
+    private UserDto createUser(UserRegistrationData userRegistrationData) {
         UserDto user = UserDto.builder()
                 .email(userRegistrationData.getEmail())
                 .password(userRegistrationData.getPassword())
                 .link(UUID.randomUUID().toString())
                 .build();
         userDao.save(user);
+        return user;
     }
 
     @Override
