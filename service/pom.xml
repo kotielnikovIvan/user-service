@@ -51,10 +51,14 @@
             <groupId>zone.dragon.dropwizard</groupId>
             <artifactId>dropwizard-hk2</artifactId>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>de.spinscale.dropwizard</groupId>-->
-        <!--            <artifactId>dropwizard-jobs-core</artifactId>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+        </dependency>
+                <dependency>
+                    <groupId>de.spinscale.dropwizard</groupId>
+                    <artifactId>dropwizard-jobs-core</artifactId>
+                </dependency>
     </dependencies>
 
 </project>

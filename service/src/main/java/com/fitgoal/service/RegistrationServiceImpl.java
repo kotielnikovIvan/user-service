@@ -33,14 +33,14 @@ public class RegistrationServiceImpl implements RegistrationService {
                     throw new UserAlreadyExistException(email);
                 });
         UserDto userDto = createUser(userRegistrationData);
-        UserEvent userEvent = getUserEvent(userRegistrationData);
+        UserEvent userEvent = buildUserEvent(userDto);
         producer.sendMessage(String.valueOf(userDto.getId()), userEvent.toString());
     }
 
-    private UserEvent getUserEvent(UserRegistrationData userRegistrationData) {
+    private UserEvent buildUserEvent(UserDto userDto) {
         return UserEvent.builder()
-                    .email(userRegistrationData.getEmail())
-                    .password(userRegistrationData.getPassword())
+                    .email(userDto.getEmail())
+                    .active(userDto.isActive())
                     .build();
     }
 

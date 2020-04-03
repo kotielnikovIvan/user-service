@@ -10,5 +10,5 @@ import lombok.Data;
 public class UserEvent {
 
     private String email;
-    private String password;
+    private boolean active;
 }

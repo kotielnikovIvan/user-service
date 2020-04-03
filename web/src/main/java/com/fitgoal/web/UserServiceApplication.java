@@ -55,6 +55,7 @@ public class UserServiceApplication extends Application<UserServiceConfiguration
         final Consumer<String, String> consumer = buildConsumer(config);
         UserEventProducer userEventProducer = new UserEventProducer(producer);
         UserEventConsumer userEventConsumer = new UserEventConsumer(consumer);
+        UserServiceKStream kStream = new UserServiceKStream();
         jersey.register(new AbstractBinder() {
             protected void configure() {
                 bind(LoginServiceImpl.class).to(LoginService.class).in(Singleton.class);
@@ -62,9 +63,10 @@ public class UserServiceApplication extends Application<UserServiceConfiguration
                 bind(ResetPasswordServiceImpl.class).to(ResetPasswordService.class).in(Singleton.class);
                 bind(UserDaoImpl.class).to(UserDao.class).in(Singleton.class);
                 bind(sessionManager).to(SqlSessionManager.class);
-//                bind(producer).to(Producer.class);
                 bind(userEventProducer).to(EventProducer.class);
                 bind(userEventConsumer).to(EventConsumer.class);
+                bind(new UserServiceKStream()).to(UserServiceKStream.class);
+//                bind(kStream).to(UserServiceKStream.class);
             }
         });
         jersey.register(ResetPasswordResource.class);
@@ -77,6 +79,7 @@ public class UserServiceApplication extends Application<UserServiceConfiguration
         jersey.register(UserAlreadyExistExceptionMapper.class);
 
         jersey.register(UserServiceKStream.class);
+
     }
 
     private SqlSessionManager buildSqlSessionManager(UserServiceConfiguration config) {
